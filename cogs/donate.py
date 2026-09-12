@@ -8,6 +8,7 @@ from utils.economy import (
     format_cash,
     parse_amount
 )
+from utils.pokemon_db import get_character_name
 
 
 class DonateView(discord.ui.View):
@@ -75,6 +76,7 @@ class DonateView(discord.ui.View):
             received_amount
         )
 
+        character_name = get_character_name(interaction.guild.id)
 
         remove_cash(
 
@@ -100,7 +102,7 @@ class DonateView(discord.ui.View):
                 f"**{format_cash(self.amount)}** "
                 f"to {self.receiver.mention}.\n\n"
 
-                f"Emiel saw the donation\n"
+                f"{character_name} saw the donation\n"
                 f"and 🍇 you and stole "
                 f"**{format_cash(stolen_amount)}** "
                 f"on the way.\n\n"

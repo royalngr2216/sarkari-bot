@@ -16,6 +16,7 @@ from utils.economy import (
 from utils.stats import add_stats
 from utils.achievement_checker import check_achievements
 from utils.items import FISHING_ITEMS
+from utils.pokemon_db import get_character_name
 
 IST = pytz.timezone("Asia/Kolkata")
 
@@ -149,11 +150,13 @@ class Fish(commands.Cog):
                 loss = cash
             remove_cash(ctx.author.id, loss)
 
+            character_name = get_character_name(ctx.guild.id)
+
             embed = discord.Embed(
                 title="🎣 STOLEN CATCH!",
                 description=(
                     "You pulled something big...\n\n"
-                    "**EMIEL** swam up and 🍇 your entire catch\n"
+                    f"**{character_name}** swam up and 🍇 your entire catch\n"
                     "before you could even see what it was."
                 ),
                 color=0xED4245

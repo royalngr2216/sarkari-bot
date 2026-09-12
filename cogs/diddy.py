@@ -4,17 +4,13 @@ import random
 import datetime
 
 from utils.economy import add_cash, format_cash, create_account
-from utils.pokemon_db import db, log_emiel_event, get_emiel_log
+from utils.pokemon_db import db, log_emiel_event, get_emiel_log, get_character_name
 
 from cogs.pokemon_spawn import (
     get_rarity,
     RARITY_LABELS,
     RARITY_EMBED_COLORS,
 )
-
-# Character name shown for the steal/buy feed — Emiel is the same
-# in-universe character used elsewhere (catch steals, fishing, mines).
-CHARACTER_NAME = "Emiel"
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -56,11 +52,11 @@ class Diddy(commands.Cog):
 
     @commands.group(name="diddy", invoke_without_command=True)
     async def diddy(self, ctx):
-        """Show Emiel's recent global activity (steals + purchases)."""
+        """Show the global activity feed (recent steals + sales)."""
 
         entries = get_emiel_log(limit=10)
 
-        character_name = CHARACTER_NAME
+        character_name = get_character_name(ctx.guild.id)
         embed = discord.Embed(
             title=f"📜 {character_name.upper()} LOG",
             color=EMIEL_COLOR,
@@ -85,12 +81,12 @@ class Diddy(commands.Cog):
         await ctx.send(embed=embed)
 
     # ─────────────────────────────────────────────
-    # .diddy sell <pokemon> — instant sale to Emiel
+    # .diddy sell <pokemon> — instant sale
     # ─────────────────────────────────────────────
 
     @diddy.command(name="sell")
     async def diddy_sell(self, ctx, *, pokemon_name: str = None):
-        """Sell a Pokémon you own directly to Emiel for instant cash."""
+        """Sell a Pokémon you own directly for instant cash."""
 
         if not pokemon_name:
             await ctx.send(embed=discord.Embed(

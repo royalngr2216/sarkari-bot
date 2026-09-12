@@ -20,6 +20,7 @@ from utils.stats import (
 )
 
 from utils.achievement_checker import check_achievements
+from utils.pokemon_db import get_character_name
 
 # --- Constants ---
 
@@ -44,11 +45,11 @@ MULTIPLIERS = {
 }
 
 EMIEL_MESSAGES = [
-    "Emiel was hiding there and raped you.",
-    "Emiel raped you and ran away.",
-    "Emiel fucked you behind the minefield.",
-    "You found Emiel. Unfortunately, he got your ass.",
-    "Emiel stole your cash and disappeared."
+    "{name} was hiding there and got you.",
+    "{name} jumped out and ran off with your cash.",
+    "{name} ambushed you behind the minefield.",
+    "You found {name}. Unfortunately, they got to you first.",
+    "{name} stole your cash and disappeared."
 ]
 
 COLOR_PLAYING = 0x5865F2
@@ -266,7 +267,9 @@ class MinesView(discord.ui.View):
             record_loss(self.ctx.author.id, total_loss)
             self.reveal_all()
             
-            action_text = random.choice(EMIEL_MESSAGES)
+            action_text = random.choice(EMIEL_MESSAGES).format(
+                name=get_character_name(self.ctx.guild.id)
+            )
             final_embed = self.get_embed("lose", f"{EMIEL} {action_text}", lost=total_loss)
             
             await interaction.message.edit(embed=final_embed, view=self)

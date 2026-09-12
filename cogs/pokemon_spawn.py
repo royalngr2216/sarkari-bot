@@ -14,6 +14,7 @@ from utils.pokemon_db import (
     get_balls,
     remove_ball,
     log_emiel_event,
+    get_character_name,
 )
 
 
@@ -675,8 +676,8 @@ class PokemonSpawn(commands.Cog):
                     f"You don't have any **{ball_name}s**.\n\n"
                     "Buy some from the shop first.\n\n"
                     "<:pb:1517998351227031632> Poké Ball - 10,000\n"
-                    "<:ub:1517997681564324114> Ultra Ball - 75,000\n"
-                    "<a:mb:1517997721288704111> Master Ball - 750,000"
+                    "<:ub:1517997681564324114> Ultra Ball - 25,000\n"
+                    "<a:mb:1517997721288704111> Master Ball - 50,000"
                 ),
                 color=0xED4245
             ))
@@ -792,10 +793,12 @@ class PokemonSpawn(commands.Cog):
                 rarity=rarity,
             )
 
+            character_name = get_character_name(ctx.guild.id)
+
             steal_embed = discord.Embed(
-                title="<:emoji_11:1515736255097471006> EMIEL APPEARED!",
+                title=f"<:emoji_11:1515736255097471006> {character_name.upper()} APPEARED!",
                 description=(
-                    f"Emiel raped your **{spawn['display']}** "
+                    f"{character_name} snatched your **{spawn['display']}** "
                     "and disappeared into the shadows!\n\n"
                     f"*Your {ball_name} is gone, and so is the Pokémon...*"
                 ),
@@ -803,7 +806,7 @@ class PokemonSpawn(commands.Cog):
             )
             steal_embed.set_thumbnail(url=gif_url(spawn["name"]))
             steal_embed.set_footer(
-                text="Better luck next time — check .emiel for the global feed"
+                text="Better luck next time — check .diddy for the global feed"
             )
 
             try:
@@ -827,7 +830,7 @@ class PokemonSpawn(commands.Cog):
                 f"**{spawn['display']}** was caught!\n"
                 f"*{RARITY_LABELS[rarity]}*\n\n"
                 f"Use `.team` to add it, `.moves` to teach it moves!\n"
-                f"Want to sell? Use `.emiel sell {spawn['display']}`"
+                f"Want to sell? Use `.diddy sell {spawn['display']}`"
             ),
             color=RARITY_EMBED_COLORS[rarity],
         )

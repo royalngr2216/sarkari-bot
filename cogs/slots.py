@@ -17,6 +17,7 @@ from utils.stats import (
 from utils.achievement_checker import (
     check_achievements
 )
+from utils.pokemon_db import get_character_name
 
 
 # ─────────────────────────
@@ -269,11 +270,12 @@ class Slots(commands.Cog):
 
         # TROLL
         if outcome == "troll":
+            character_name = get_character_name(ctx.guild.id)
             embed = build_embed(
                 result[0], result[1], result[2],
                 ctx.author, amount,
                 color=COLOR_TROLL,
-                result_line=f"☠️ EMIEL entered the casino and <a:sex:1514766414248939610> you.\n💸 Lost **{format_cash(amount)}**",
+                result_line=f"☠️ {character_name} entered the casino and <a:sex:1514766414248939610> you.\n💸 Lost **{format_cash(amount)}**",
             )
             await msg.edit(embed=embed)
             return

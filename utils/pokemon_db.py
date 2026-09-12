@@ -28,6 +28,35 @@ pokemon_collection = db["pokemon"] if db is not None else None
 pokemon_market = db["pokemon_market"] if db is not None else None
 pokemon_spawn_channels = db["pokemon_spawn_channels"] if db is not None else None
 emiel_log = db["emiel_log"] if db is not None else None
+character_names = db["character_names"] if db is not None else None
+
+# -----------------------------------
+# CUSTOM CHARACTER NAME (per-server)
+# -----------------------------------
+# Lets a server rename the "thief" character shown when catches, fish,
+# donations, or mines get stolen (e.g. .setcharacter Neel). Falls back
+# to the original name if nothing has been set for that guild.
+
+DEFAULT_CHARACTER_NAME = "Emiel"
+
+
+def get_character_name(guild_id) -> str:
+    """Return the custom steal/rob character name set for a guild."""
+    if character_names is None or guild_id is None:
+        return DEFAULT_CHARACTER_NAME
+
+    doc = character_names.find_one({"guild_id": guild_id})
+    return doc["name"] if doc else DEFAULT_CHARACTER_NAME
+
+
+def set_character_name(guild_id, name: str):
+    """Set the custom steal/rob character name for a guild."""
+    character_names.update_one(
+        {"guild_id": guild_id},
+        {"$set": {"name": name}},
+        upsert=True
+    )
+
 
 # -----------------------------------
 # DATABASE UTILITY FUNCTIONS
