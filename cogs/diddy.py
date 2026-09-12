@@ -23,11 +23,11 @@ CHARACTER_NAME = "Emiel"
 # ─────────────────────────────────────────────────────────────────────
 
 SELL_PRICE_RANGES = {
-    "common":      (300,    500),
-    "pseudo":      (7_000,  13_000),
-    "ultra_beast": (7_000,  13_000),
-    "legendary":   (18_000, 22_000),
-    "mythical":    (27_000, 33_000),
+    "common":      (300,     500),
+    "pseudo":      (25_000,  30_000),
+    "ultra_beast": (25_000,  30_000),
+    "legendary":   (50_000,  60_000),
+    "mythical":    (75_000, 100_000),
 }
 
 SELL_FLAVOR_TEXT = [
