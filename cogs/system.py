@@ -109,10 +109,10 @@ HELP_CATEGORIES = {
         "**.lottery amount**\n"
         "Takes part in the lottery, higher amount = more chances of winning.\n\n"
         "**.slots amount**\n"
-        "Play the slot machine." 
+        "Play the slot machine."
     ),
 
-        "🐉 Pokemon": (
+    "🐉 Pokemon": (
         "**.catch <pb/ub/mb> <name>**\n"
         "Catch the wild Pokémon currently in the channel using a Poké/Ultra/Master Ball.\n\n"
         "**.balls [user]**\n"
@@ -138,15 +138,8 @@ HELP_CATEGORIES = {
         "**.diddy**\n"
         "View the collector's global activity feed (recent steals and sales).\n\n"
         "**.diddy sell <pokemon>**\n"
-        "Instantly sell a Pokémon to the collector for a rarity-based payout.\n\n"
-        "**.setcharacter <name>**\n"
-        "Admin: Rename the character who steals catches, fish, and donations across the bot.\n\n"
-        "**.setspawnchannel**\n"
-        "Admin: Set the current channel for automatic 10-minute Pokémon spawns.\n\n"
-        "**.spawntest**\n"
-        "Admin: Force a wild Pokémon to spawn immediately."
-        ),
-    
+        "Instantly sell a Pokémon to the collector for a rarity-based payout."
+    ),
 
     "📊 Profile": (
         "**.profile [user]**\n"
@@ -157,11 +150,19 @@ HELP_CATEGORIES = {
         "View all quests and rewards."
     ),
 
-    "⚙ Utility": (
+    "🛠️ Admin": (
+        "**.addmoney @user amount**\n"
+        "Owner-only: Add NGR to a user's balance.\n\n"
+        "**.setcharacter <name>**\n"
+        "Admin: Rename the character who steals catches, fish, and donations.\n\n"
+        "**.setspawnchannel**\n"
+        "Admin: Set the current channel for automatic Pokémon spawns.\n\n"
+        "**.spawntest**\n"
+        "Admin: Force a wild Pokémon to spawn immediately.\n\n"
         "**.ping**\n"
-        "View bot latency.\n\n"
+        "Utility: View bot latency.\n\n"
         "**.stop**\n"
-        "Force stop active game."
+        "Utility: Force stop an active game."
     ),
 }
 
@@ -379,4 +380,3 @@ class System(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(System(bot))
-        
