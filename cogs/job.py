@@ -140,7 +140,7 @@ class Job(commands.Cog):
                 description=(
 
                     f"You went for work but "
-                    f"**FURRY** 🍇 you and "
+                    f"**Motagorilla** 🍇 you and "
                     f"took **{format_cash(loss)}**."
 
                 ),
