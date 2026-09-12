@@ -202,7 +202,7 @@ class Mine(commands.Cog):
         # ─── ANCIENT MINER ───
         if risk_roll <= 15:
             embed = discord.Embed(
-                title="👴 THE ANCIENT MINER",
+                title="👴 THE ANCIENT NIGGER",
                 description=(
                     "A shadowy figure steps out from the darkness.\n\n"
                     "**\"These mines have belonged to me for 300 years.\"**\n\n"
