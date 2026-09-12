@@ -4,7 +4,7 @@ import random
 import datetime
 
 from utils.economy import add_cash, format_cash, create_account
-from utils.pokemon_db import db, log_emiel_event, get_emiel_log, get_character_name
+from utils.pokemon_db import db, log_emiel_event, get_emiel_log
 
 from cogs.pokemon_spawn import (
     get_rarity,
@@ -56,7 +56,9 @@ class Diddy(commands.Cog):
 
         entries = get_emiel_log(limit=10)
 
-        character_name = get_character_name(ctx.guild.id)
+        # The .diddy command itself always uses the Diddy name.
+        # .setcharacter only controls the thief name shown in activity events.
+        character_name = "Diddy"
         embed = discord.Embed(
             title=f"📜 {character_name.upper()} LOG",
             color=EMIEL_COLOR,
