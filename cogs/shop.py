@@ -12,7 +12,7 @@ from utils.economy import (
 )
 
 
-PADLOCK_PRICE = 250000
+PADLOCK_PRICE = 100000
 WORKER_PRICE = 5000000
 LOCK_AND_KEY_PRICE = 2500000
 SHOVEL_PRICE = 3000000
@@ -73,7 +73,7 @@ class ShopView(discord.ui.View):
 
                 label="Padlock",
 
-                description="250K NGR • 1 day protection",
+                description="100K NGR • 1 day protection",
 
                 emoji="🛡"
 
@@ -939,7 +939,7 @@ class Shop(commands.Cog):
 
                 "Protects your account from rob attempts.\n\n"
 
-                "• Price: **250K NGR**\n"
+                "• Price: **100K NGR**\n"
                 "• Duration: **1 Day**\n"
                 f"• Active Time: **{active_days} Days**"
 
