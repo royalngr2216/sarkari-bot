@@ -151,7 +151,7 @@ class Rob(commands.Cog):
             ),
             color=HEIST_FRAMES[0][2]
         )
-        embed.set_footer(text=f"ECHLEON  •  Attempts left: {attempts_left}/{max_robs}")
+        embed.set_footer(text=f"Sarkari Adda  •  Attempts left: {attempts_left}/{max_robs}")
         msg = await ctx.send(embed=embed)
 
         for title, subtitle, color in HEIST_FRAMES[1:]:

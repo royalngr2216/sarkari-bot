@@ -913,7 +913,7 @@ class Shop(commands.Cog):
 
         embed = discord.Embed(
 
-            title="🛒 ECHLEON SHOP",
+            title="🛒 SARKARI ADDA SHOP",
 
             description=(
 
@@ -1061,7 +1061,7 @@ class Shop(commands.Cog):
 
         embed.set_footer(
 
-            text="ECHLEON Economy System"
+            text="Sarkari Adda Economy System"
         )
 
 

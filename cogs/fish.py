@@ -119,7 +119,7 @@ class Fish(commands.Cog):
             ),
             color=0x3498DB
         )
-        embed.set_footer(text="ECHLEON • Activity")
+        embed.set_footer(text="Sarkari Adda • Activity")
         msg = await ctx.send(embed=embed)
 
         # Animate bobber waiting frames
@@ -163,7 +163,7 @@ class Fish(commands.Cog):
                 value=f"**{format_cash(loss)}**",
                 inline=True
             )
-            embed.set_footer(text="ECHLEON • Better luck next time!")
+            embed.set_footer(text="Sarkari Adda • Better luck next time!")
             await msg.edit(embed=embed)
             return
 
@@ -209,7 +209,7 @@ class Fish(commands.Cog):
             value=rarity_label,
             inline=True
         )
-        embed.set_footer(text=f"ECHLEON • Fish  •  Item value: {format_cash(selected_item['price'])}")
+        embed.set_footer(text=f"Sarkari Adda • Fish  •  Item value: {format_cash(selected_item['price'])}")
 
         await msg.edit(embed=embed)
 

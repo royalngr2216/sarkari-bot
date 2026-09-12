@@ -1,5 +1,5 @@
 """
-Shared visual toolkit — ECHLEON design system.
+Shared visual toolkit — Sarkari Adda design system.
 
 Every Pillow-based render in the bot (profile cards, game animations,
 reveal cards, leaderboards) should pull fonts/colors/helpers from here

@@ -204,7 +204,7 @@ async def render_leaderboard(
             )
             y += ROW_H
 
-    footer_text = "ECHLEON  •  .titles to spend big  •  .cash to check yourself"
+    footer_text = "Sarkari Adda  •  .titles to spend big  •  .cash to check yourself"
     draw.text((PAD_X, total_h - 34), footer_text, font=FONT_FOOTER, fill=TEXT_SUB)
 
     buf = io.BytesIO()

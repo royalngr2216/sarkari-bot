@@ -440,7 +440,7 @@ async def render_battle(
     """
 
     async with aiohttp.ClientSession(
-        headers={"User-Agent": "EchleonBot/1.0"}
+        headers={"User-Agent": "SarkariAddaBot/1.0"}
     ) as session:
         back_img, front_img = await asyncio.gather(
             _load_sprite(session, back_sprite_url(p0_poke),  (90, 150, 230)),

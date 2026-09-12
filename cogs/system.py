@@ -192,7 +192,7 @@ class HelpDropdown(discord.ui.Select):
             description=HELP_CATEGORIES[category],
             color=0x5865F2,
         )
-        embed.set_footer(text="ECHLEON Economy System")
+        embed.set_footer(text="Sarkari Adda Economy System")
         await interaction.response.edit_message(embed=embed, view=self.view)
 
 
@@ -221,7 +221,7 @@ class System(commands.Cog):
     async def help(self, ctx):
 
         embed = discord.Embed(
-            title="ECHLEON HELP",
+            title="SARKARI ADDA HELP",
             description=(
                 "Modern economy system with games, "
                 "workers, activities, inventory and more.\n\n"
@@ -229,7 +229,7 @@ class System(commands.Cog):
             ),
             color=0x5865F2,
         )
-        embed.set_footer(text="ECHLEON Economy System")
+        embed.set_footer(text="Sarkari Adda Economy System")
         await ctx.send(embed=embed, view=HelpView())
 
     # ─────────────────────────

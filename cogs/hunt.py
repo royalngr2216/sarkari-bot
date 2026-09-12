@@ -115,7 +115,7 @@ class Hunt(commands.Cog):
             ),
             color=0x2ECC71
         )
-        embed.set_footer(text="ECHLEON • Activity")
+        embed.set_footer(text="Sarkari Adda • Activity")
         msg = await ctx.send(embed=embed)
 
         for i, (title, subtitle, step) in enumerate(HUNT_FRAMES[1:], 1):
@@ -200,7 +200,7 @@ class Hunt(commands.Cog):
             value=rarity_label,
             inline=True
         )
-        embed.set_footer(text=f"ECHLEON • Hunt  •  Item value: {format_cash(selected_item['price'])}")
+        embed.set_footer(text=f"Sarkari Adda • Hunt  •  Item value: {format_cash(selected_item['price'])}")
 
         await msg.edit(embed=embed)
 

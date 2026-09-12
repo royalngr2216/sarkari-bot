@@ -135,7 +135,7 @@ class Mine(commands.Cog):
             ),
             color=0xE67E22
         )
-        embed.set_footer(text="ECHLEON • Activity")
+        embed.set_footer(text="Sarkari Adda • Activity")
         msg = await ctx.send(embed=embed)
 
         for i, (title, subtitle, step) in enumerate(drill_frames[1:], 1):
@@ -177,7 +177,7 @@ class Mine(commands.Cog):
                 color=0xED4245
             )
             embed.add_field(name="💸 Lost while fleeing", value=f"**{format_cash(loss)}**", inline=True)
-            embed.set_footer(text="ECHLEON • You survived... barely.")
+            embed.set_footer(text="Sarkari Adda • You survived... barely.")
             await msg.edit(embed=embed)
             return
 
@@ -195,7 +195,7 @@ class Mine(commands.Cog):
                 color=0xE67E22
             )
             embed.add_field(name="💰 Escaped with", value=f"**{format_cash(MINE_REWARD)}**", inline=True)
-            embed.set_footer(text="ECHLEON • Could've been worse.")
+            embed.set_footer(text="Sarkari Adda • Could've been worse.")
             await msg.edit(embed=embed)
             return
 
@@ -211,7 +211,7 @@ class Mine(commands.Cog):
                 ),
                 color=0xED4245
             )
-            embed.set_footer(text="ECHLEON • Some forces are beyond your control.")
+            embed.set_footer(text="Sarkari Adda • Some forces are beyond your control.")
             await msg.edit(embed=embed)
             return
 
@@ -260,7 +260,7 @@ class Mine(commands.Cog):
         )
         from utils.items import MINING_ITEMS
         ore_price = next((i["price"] for i in MINING_ITEMS if i["name"] == selected_ore), 0)
-        embed.set_footer(text=f"ECHLEON • Mine  •  Ore value: {format_cash(ore_price)}")
+        embed.set_footer(text=f"Sarkari Adda • Mine  •  Ore value: {format_cash(ore_price)}")
 
         await msg.edit(embed=embed)
 
