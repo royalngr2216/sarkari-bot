@@ -3,6 +3,7 @@ import discord
 import random
 import datetime
 
+from utils.branding import get_character_name
 from utils.economy import add_cash, format_cash, create_account
 from utils.pokemon_db import db, log_emiel_event, get_emiel_log
 
@@ -55,15 +56,16 @@ class Emiel(commands.Cog):
 
         entries = get_emiel_log(limit=10)
 
+        character_name = get_character_name(ctx.guild.id)
         embed = discord.Embed(
-            title="📜 EMIEL LOG",
+            title=f"📜 {character_name.upper()} LOG",
             color=EMIEL_COLOR,
         )
 
         if not entries:
             embed.description = (
-                "🥷 Emiel hasn't made a move yet...\n\n"
-                "Stay sharp — he could strike at any catch."
+                f"🥷 {character_name} hasn't made a move yet...\n\n"
+                f"Stay sharp — {character_name} could strike at any catch."
             )
         else:
             lines = []
@@ -73,7 +75,7 @@ class Emiel(commands.Cog):
             embed.description = "\n\n".join(lines)
 
         embed.set_footer(
-            text="Catches have a 10% chance of being stolen by Emiel"
+            text=f"Catches have a 10% chance of being stolen by {character_name}"
         )
 
         await ctx.send(embed=embed)
@@ -120,8 +122,6 @@ class Emiel(commands.Cog):
         price = random.randint(low, high)
         flavor = random.choice(SELL_FLAVOR_TEXT)
 
-        # Remove the Pokémon from the seller's collection and (if present)
-        # their active team, then pay out.
         db.pokemon_collection.delete_one({"user_id": uid, "name": pname})
         db.pokemon_teams.update_one(
             {"user_id": uid},
@@ -170,7 +170,6 @@ def _format_log_line(entry: dict) -> str:
             f"from <@{entry.get('user_id')}>"
         )
 
-    # "sale"
     price = entry.get("price", 0)
     return (
         f"💰 Bought **{entry.get('pokemon_display', 'a Pokémon')}** "
