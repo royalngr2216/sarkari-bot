@@ -55,7 +55,7 @@ BOBBER_FRAMES = [
 
 FISH_FRAMES = [
     ("🎣 **You trying to Fish...**",         "🌊 Your Rod hitting the water.",              1),
-    ("〰️ **Saw Azure Squirting...**",         BOBBER_FRAMES[0],                           3),
+    ("〰️ **Saw Deepali Squirting...**",         BOBBER_FRAMES[0],                           3),
     ("〰️ **Still Squrting ...**",             BOBBER_FRAMES[2],                           4),
     ("⚡ **Something's on your hook!**",     "🎣 You shook your hook — SAW SOMETHING!",        5),
 ]
