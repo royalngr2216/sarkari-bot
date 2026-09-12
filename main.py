@@ -80,6 +80,14 @@ class RoyalBot(commands.Bot):
 
                         traceback.print_exc()
 
+    async def on_message(self, message):
+        # Commands are only usable inside Discord servers.
+        # DMs are intentionally ignored completely.
+        if message.guild is None:
+            return
+
+        await self.process_commands(message)
+
 bot = RoyalBot()
 
 # EVENTS
