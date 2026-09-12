@@ -8,7 +8,7 @@ import discord
 # stomping on footers that already carry useful info (timers, page
 # counts, etc.) — those get "ECHLEON  •  <existing text>" instead.
 
-BRAND = "ECHLEON"
+BRAND = "Sarkari Adda"
 
 
 def brand(embed: discord.Embed, extra: str | None = None) -> discord.Embed:
