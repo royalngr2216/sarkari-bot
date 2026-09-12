@@ -151,8 +151,6 @@ HELP_CATEGORIES = {
     ),
 
     "🛠️ Admin": (
-        "**.addmoney @user amount**\n"
-        "Owner-only: Add NGR to a user's balance.\n\n"
         "**.setcharacter <name>**\n"
         "Admin: Rename the character who steals catches, fish, and donations.\n\n"
         "**.setspawnchannel**\n"
