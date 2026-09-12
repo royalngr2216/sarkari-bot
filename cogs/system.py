@@ -54,11 +54,11 @@ HELP_CATEGORIES = {
 
     "🎒 Items": (
         "**.shop**\n"
-        "Open the item shop, including the 🎾 Poké Mart for buying balls.\n\n"
+        "Open the item shop, including the Poké Mart for buying balls.\n\n"
         "**.inventory**\n"
         "View collected items.\n\n"
         "**.sell item amount**\n"
-        "Sell inventory items.\n\n"
+        "Sell inventory items.\n"
         ".sell all all for selling all.\n\n"
         "**.padlock**\n"
         "View protection status."
