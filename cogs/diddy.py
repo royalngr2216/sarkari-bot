@@ -3,7 +3,6 @@ import discord
 import random
 import datetime
 
-from utils.branding import get_character_name
 from utils.economy import add_cash, format_cash, create_account
 from utils.pokemon_db import db, log_emiel_event, get_emiel_log
 
@@ -13,17 +12,22 @@ from cogs.pokemon_spawn import (
     RARITY_EMBED_COLORS,
 )
 
+# Character name shown for the steal/buy feed — Emiel is the same
+# in-universe character used elsewhere (catch steals, fishing, mines).
+CHARACTER_NAME = "Emiel"
+
 
 # ─────────────────────────────────────────────────────────────────────
-# SELL PRICE RANGES (per rarity tier)
+# SELL PRICE RANGES (per rarity tier) — rarity-scaled, in line with the
+# rest of the economy (daily/weekly/monthly, hunt/fish/mine rewards).
 # ─────────────────────────────────────────────────────────────────────
 
 SELL_PRICE_RANGES = {
-    "common":      (15_000,     25_000),
-    "pseudo":      (350_000,   650_000),
-    "ultra_beast": (350_000,   650_000),
-    "legendary":   (900_000,   1_100_000),
-    "mythical":    (1_350_000, 1_650_000),
+    "common":      (300,    500),
+    "pseudo":      (7_000,  13_000),
+    "ultra_beast": (7_000,  13_000),
+    "legendary":   (18_000, 22_000),
+    "mythical":    (27_000, 33_000),
 }
 
 SELL_FLAVOR_TEXT = [
@@ -41,22 +45,22 @@ SELL_FLAVOR_TEXT = [
 EMIEL_COLOR = 0x2B2D31
 
 
-class Emiel(commands.Cog):
+class Diddy(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
     # ─────────────────────────────────────────────
-    # .emiel — global activity feed
+    # .diddy — global activity feed
     # ─────────────────────────────────────────────
 
-    @commands.group(name="emiel", invoke_without_command=True)
-    async def emiel(self, ctx):
+    @commands.group(name="diddy", invoke_without_command=True)
+    async def diddy(self, ctx):
         """Show Emiel's recent global activity (steals + purchases)."""
 
         entries = get_emiel_log(limit=10)
 
-        character_name = get_character_name(ctx.guild.id)
+        character_name = CHARACTER_NAME
         embed = discord.Embed(
             title=f"📜 {character_name.upper()} LOG",
             color=EMIEL_COLOR,
@@ -81,18 +85,18 @@ class Emiel(commands.Cog):
         await ctx.send(embed=embed)
 
     # ─────────────────────────────────────────────
-    # .emiel sell <pokemon> — instant sale to Emiel
+    # .diddy sell <pokemon> — instant sale to Emiel
     # ─────────────────────────────────────────────
 
-    @emiel.command(name="sell")
-    async def emiel_sell(self, ctx, *, pokemon_name: str = None):
+    @diddy.command(name="sell")
+    async def diddy_sell(self, ctx, *, pokemon_name: str = None):
         """Sell a Pokémon you own directly to Emiel for instant cash."""
 
         if not pokemon_name:
             await ctx.send(embed=discord.Embed(
                 description=(
-                    "**Usage:** `.emiel sell <Pokémon>`\n"
-                    "**Example:** `.emiel sell Rayquaza`"
+                    "**Usage:** `.diddy sell <Pokémon>`\n"
+                    "**Example:** `.diddy sell Rayquaza`"
                 ),
                 color=0xED4245,
             ))
@@ -179,4 +183,4 @@ def _format_log_line(entry: dict) -> str:
 
 
 async def setup(bot):
-    await bot.add_cog(Emiel(bot))
+    await bot.add_cog(Diddy(bot))
