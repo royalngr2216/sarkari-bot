@@ -154,7 +154,9 @@ HELP_CATEGORIES = {
         "**.setcharacter <name>**\n"
         "Admin: Rename the character who steals catches, fish, and donations.\n\n"
         "**.setspawnchannel**\n"
-        "Admin: Set the current channel for automatic Pokémon spawns.\n\n"
+        "Admin: Set/toggle the automatic Pokémon spawn channel.\n\n"
+        "**.forcespawn**\n"
+        "Admin: Immediately spawn one Pokémon in the current channel.\n\n"
         "**.spawntest**\n"
         "Admin: Force a wild Pokémon to spawn immediately.\n\n"
         "**.ping**\n"
@@ -180,7 +182,7 @@ class HelpDropdown(discord.ui.Select):
             for category in HELP_CATEGORIES
         ]
         super().__init__(
-            placeholder="Select a category...",
+            placeholder="Select a command category...",
             min_values=1,
             max_values=1,
             options=options,
@@ -189,191 +191,36 @@ class HelpDropdown(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         category = self.values[0]
         embed = discord.Embed(
-            title=category,
+            title=f"📚 {category}",
             description=HELP_CATEGORIES[category],
             color=0x5865F2,
         )
-        embed.set_footer(text="Sarkari Adda Economy System")
         await interaction.response.edit_message(embed=embed, view=self.view)
 
 
 class HelpView(discord.ui.View):
 
     def __init__(self):
-        super().__init__(timeout=180)
+        super().__init__(timeout=120)
         self.add_item(HelpDropdown())
 
-
-# ─────────────────────────
-# SYSTEM COG
-# ─────────────────────────
 
 class System(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
-
-    # ─────────────────────────
-    # HELP
-    # ─────────────────────────
-
     @commands.command(name="help")
     async def help(self, ctx):
-
         embed = discord.Embed(
-            title="SARKARI ADDA HELP",
+            title="📚 Sarkari Adda Help",
             description=(
-                "Modern economy system with games, "
-                "workers, activities, inventory and more.\n\n"
-                "Select a category below."
+                "Select a category below to view available commands.\n\n"
+                "Some commands may require permissions."
             ),
             color=0x5865F2,
         )
-        embed.set_footer(text="Sarkari Adda Economy System")
         await ctx.send(embed=embed, view=HelpView())
-
-    # ─────────────────────────
-    # LEADERBOARD
-    # ─────────────────────────
-
-    @commands.command(name="leaderboard")
-    async def leaderboard(self, ctx):
-
-        async with ctx.typing():
-
-            # Efficient: sort + limit at the DB level instead of pulling
-            # every account with cash > 0 into memory and sorting in Python.
-            top_docs = list(
-                economy_collection.find({"cash": {"$gt": 0}})
-                .sort("cash", -1)
-                .limit(10)
-            )
-
-            top_entries = []
-            top_ids = set()
-
-            for index, user in enumerate(top_docs):
-                user_id = int(user["user_id"])
-                top_ids.add(user_id)
-                cash = user.get("cash", 0)
-
-                try:
-                    fetched_user = await self.bot.fetch_user(user_id)
-                    name = fetched_user.display_name if hasattr(fetched_user, "display_name") else fetched_user.name
-                    avatar_url = str(fetched_user.display_avatar.url)
-                except Exception:
-                    name = f"User {user_id}"
-                    avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png"
-
-                top_entries.append({
-                    "rank": index + 1,
-                    "name": name,
-                    "cash": cash,
-                    "user_id": user_id,
-                    "avatar_url": avatar_url,
-                    "title_key": get_equipped(user_id),
-                })
-
-            if not top_entries:
-                embed = discord.Embed(
-                    description="❌ No one has any cash yet.",
-                    color=0xED4245,
-                )
-                await ctx.send(embed=embed)
-                return
-
-            # Pin the requester's own rank at the bottom if they're not
-            # already visible in the top 10.
-            requester_entry = None
-            if ctx.author.id not in top_ids:
-                my_doc = economy_collection.find_one({"user_id": str(ctx.author.id)})
-                my_cash = my_doc.get("cash", 0) if my_doc else 0
-
-                if my_cash > 0:
-                    my_rank = economy_collection.count_documents({"cash": {"$gt": my_cash}}) + 1
-                    requester_entry = {
-                        "rank": my_rank,
-                        "name": ctx.author.display_name,
-                        "cash": my_cash,
-                        "user_id": ctx.author.id,
-                        "avatar_url": str(ctx.author.display_avatar.url),
-                        "title_key": get_equipped(ctx.author.id),
-                    }
-
-            try:
-                buf = await render_leaderboard(top_entries, requester_entry, format_cash)
-                file = discord.File(buf, filename="leaderboard.png")
-                await ctx.send(file=file)
-            except Exception:
-                # Fallback to the plain text embed if image rendering fails
-                # for any reason (missing fonts, network hiccup fetching an
-                # avatar, etc.) so the command never just breaks.
-                embed = discord.Embed(title="LEADERBOARD", color=0xF1C40F)
-                text = ""
-                for entry in top_entries:
-                    text += f"**#{entry['rank']} {entry['name']}**\n{format_cash(entry['cash'])}\n\n"
-                embed.description = text
-                await ctx.send(embed=embed)
-
-
-    # ─────────────────────────
-    # STOP
-    # ─────────────────────────
-
-    @commands.command(name="stop")
-    async def stop(self, ctx):
-
-        from utils.game_state import (
-            randoms_games,
-            deathroll_games,
-            crack_games,
-        )
-
-        stopped = False
-
-        if ctx.channel.id in randoms_games:
-            del randoms_games[ctx.channel.id]
-            stopped = True
-
-        if ctx.channel.id in deathroll_games:
-            del deathroll_games[ctx.channel.id]
-            stopped = True
-
-        if ctx.channel.id in crack_games:
-            del crack_games[ctx.channel.id]
-            stopped = True
-
-        # Also stop active Pokémon battles
-        try:
-            from cogs.pokemon_battle import PokemonBattle
-            cog = self.bot.get_cog("PokemonBattle")
-            if cog and ctx.channel.id in cog.active:
-                del cog.active[ctx.channel.id]
-                stopped = True
-        except Exception:
-            pass
-
-        embed = discord.Embed(
-            description="🛑 Active game stopped." if stopped else "❌ No active game.",
-            color=0xED4245,
-        )
-        await ctx.send(embed=embed)
-
-
-    # ─────────────────────────
-    # PING
-    # ─────────────────────────
-
-    @commands.command(name="ping")
-    async def ping(self, ctx):
-
-        latency = round(self.bot.latency * 1000)
-        embed   = discord.Embed(
-            description=f"🏓 Pong: **{latency}ms**",
-            color=0x57F287,
-        )
-        await ctx.send(embed=embed)
 
 
 async def setup(bot):
