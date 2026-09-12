@@ -59,7 +59,7 @@ class Economy(commands.Cog):
 
             return
 
-        amount = 50000
+        amount = 1000
 
         add_cash(
             ctx.author.id,
@@ -121,7 +121,7 @@ class Economy(commands.Cog):
 
             return
 
-        amount = 500000
+        amount = 10000
 
         add_cash(
             ctx.author.id,
@@ -185,7 +185,7 @@ class Economy(commands.Cog):
 
         # Was a copy-paste bug: monthly used to pay the exact same amount
         # as weekly, so there was no reason to ever wait a month for it.
-        amount = 2000000
+        amount = 50000
 
         add_cash(
             ctx.author.id,

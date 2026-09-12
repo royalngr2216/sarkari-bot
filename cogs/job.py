@@ -24,7 +24,7 @@ IST = pytz.timezone("Asia/Kolkata")
 
 JOB_COOLDOWN = 3600
 
-JOB_REWARD = 100000
+JOB_REWARD = 2000
 
 
 class Job(commands.Cog):
@@ -118,7 +118,7 @@ class Job(commands.Cog):
 
         if robbed:
 
-            loss = 100000
+            loss = 2000
 
             cash = get_cash(ctx.author.id)
 

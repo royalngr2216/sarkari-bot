@@ -19,7 +19,7 @@ from utils.achievement_checker import check_achievements
 IST = pytz.timezone("Asia/Kolkata")
 
 MINE_COOLDOWN = 10800
-MINE_REWARD   = 150000
+MINE_REWARD   = 3000
 
 ORES = {
     "stone":       {"emoji": "🪨", "chance": 35},
@@ -160,7 +160,7 @@ class Mine(commands.Cog):
 
         # ─── CAVE COLLAPSE ───
         if risk_roll <= 5:
-            loss = random.randint(50000, 150000)
+            loss = random.randint(1000, 3000)
             cash = get_cash(ctx.author.id)
             if loss > cash:
                 loss = cash

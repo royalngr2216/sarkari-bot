@@ -31,19 +31,19 @@ POKE_MART_ITEMS = {
         "name": "Poké Ball",
         "emoji": "<:pb:1517998351227031632>",
         "db": "pokeball",
-        "price": 5_000,
+        "price": 10_000,
     },
     "ub": {
         "name": "Ultra Ball",
         "emoji": "<:ub:1517997681564324114>",
         "db": "ultraball",
-        "price": 75_000,
+        "price": 25_000,
     },
     "mb": {
         "name": "Master Ball",
         "emoji": "<a:mb:1517997721288704111>",
         "db": "masterball",
-        "price": 750_000,
+        "price": 50_000,
     },
 }
 
@@ -1025,9 +1025,9 @@ class Shop(commands.Cog):
 
                 "Buy Poké Balls to catch wild Pokémon.\n\n"
 
-                "• <:pb:1517998351227031632> Poké Ball: **5K NGR**\n"
-                "• <:ub:1517997681564324114> Ultra Ball: **75K NGR**\n"
-                "• <a:mb:1517997721288704111> Master Ball: **750K NGR**\n\n"
+                "• <:pb:1517998351227031632> Poké Ball: **10K NGR**\n"
+                "• <:ub:1517997681564324114> Ultra Ball: **25K NGR**\n"
+                "• <a:mb:1517997721288704111> Master Ball: **50K NGR**\n\n"
 
                 f"📦 Owned: **{balls.get('pokeball', 0)}** / "
                 f"**{balls.get('ultraball', 0)}** / "

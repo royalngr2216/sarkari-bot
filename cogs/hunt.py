@@ -20,7 +20,7 @@ from utils.items import HUNTING_ITEMS
 IST = pytz.timezone("Asia/Kolkata")
 
 HUNT_COOLDOWN = 1800
-HUNT_REWARD = 50000
+HUNT_REWARD = 1000
 
 
 # ─────────────────────────
@@ -134,7 +134,7 @@ class Hunt(commands.Cog):
 
         # ─── BAD EVENT ───
         if robbed:
-            loss = 100000
+            loss = 2000
             cash = get_cash(ctx.author.id)
             if cash < loss:
                 loss = cash

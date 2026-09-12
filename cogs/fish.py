@@ -20,7 +20,7 @@ from utils.items import FISHING_ITEMS
 IST = pytz.timezone("Asia/Kolkata")
 
 FISH_COOLDOWN = 1800
-FISH_REWARD   = 50000
+FISH_REWARD   = 1000
 
 
 # ─────────────────────────
@@ -143,7 +143,7 @@ class Fish(commands.Cog):
 
         # ─── BAD EVENT ───
         if robbed:
-            loss = 100000
+            loss = 2000
             cash = get_cash(ctx.author.id)
             if cash < loss:
                 loss = cash

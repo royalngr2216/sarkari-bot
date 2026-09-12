@@ -16,13 +16,13 @@ BALL_DISPLAY = {
         "name": "Ultra Ball",
         "emoji": "<:ub:1517997681564324114>",
         "code": "ub",
-        "price": 75_000,
+        "price": 25_000,
     },
     "masterball": {
         "name": "Master Ball",
         "emoji": "<a:mb:1517997721288704111>",
         "code": "mb",
-        "price": 750_000,
+        "price": 50_000,
     },
 }
 
