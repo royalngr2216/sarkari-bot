@@ -605,7 +605,7 @@ class ShopView(discord.ui.View):
 
                 label="Poké Ball",
 
-                description="5K NGR each",
+                description="10K NGR each",
 
                 emoji="<:pb:1517998351227031632>",
 
@@ -616,7 +616,7 @@ class ShopView(discord.ui.View):
 
                 label="Ultra Ball",
 
-                description="75K NGR each",
+                description="25K NGR each",
 
                 emoji="<:ub:1517997681564324114>",
 
@@ -627,7 +627,7 @@ class ShopView(discord.ui.View):
 
                 label="Master Ball",
 
-                description="750K NGR each",
+                description="50K NGR each",
 
                 emoji="<a:mb:1517997721288704111>",
 
