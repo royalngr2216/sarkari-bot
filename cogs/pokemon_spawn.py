@@ -256,7 +256,7 @@ class PokemonSpawn(commands.Cog):
 
     def cog_unload(self): self.spawn_loop.cancel()
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=5)
     async def spawn_loop(self):
         if db is None: return
         for doc in db.pokemon_spawn_channels.find():
@@ -267,7 +267,7 @@ class PokemonSpawn(commands.Cog):
     @spawn_loop.before_loop
     async def before_spawn(self):
         await self.bot.wait_until_ready()
-        await asyncio.sleep(60)
+        await asyncio.sleep(300)
 
     async def do_spawn(self, channel):
         poke = await fetch_random_pokemon()
@@ -275,16 +275,28 @@ class PokemonSpawn(commands.Cog):
         rarity = get_rarity(poke["id"])
         active_spawns[str(channel.id)] = {**poke, "caught": False}
         embed = discord.Embed(
-            title="A wild Pokémon appeared! 🌿",
-            description=("**Who's that Pokémon?** 🤔\n\n"
-                         "Type `.catch pb/ub/mb <pokemon name>` to catch it!\n"
-                         "First trainer to guess correctly wins!\n\n"
-                         "⚠️ You can only catch each species **once!**" + RARITY_SPAWN_EXTRA[rarity]),
+            title="A wild Pokémon appeared!...",
+            description=f"**{poke['display']}**\n\nUse `.catch <pb/ub/mb> <name>` to catch it!{RARITY_SPAWN_EXTRA[rarity]}",
             color=RARITY_EMBED_COLORS[rarity],
         )
         embed.set_image(url=gif_url(poke["name"]))
-        embed.set_footer(text="Be fast! Only one trainer can catch it.")
         await channel.send(embed=embed)
+
+    @commands.command(name="setspawnchannel")
+    @commands.has_permissions(manage_guild=True)
+    async def set_spawn_channel(self, ctx):
+        if db is None:
+            await ctx.send("❌ Database unavailable.")
+            return
+        existing = db.pokemon_spawn_channels.find_one({"guild_id": str(ctx.guild.id), "channel_id": str(ctx.channel.id)})
+        if existing:
+            db.pokemon_spawn_channels.delete_one({"_id": existing["_id"]})
+            active_spawns.pop(str(ctx.channel.id), None)
+            await ctx.send("🛑 Automatic Pokémon spawning disabled in this channel.")
+            return
+        db.pokemon_spawn_channels.delete_many({"guild_id": str(ctx.guild.id)})
+        db.pokemon_spawn_channels.insert_one({"guild_id": str(ctx.guild.id), "channel_id": str(ctx.channel.id)})
+        await ctx.send("✅ Pokémon spawning enabled in this channel every **5 minutes**.")
 
     @commands.command(name="forcespawn", aliases=["spawntest"])
     @commands.has_permissions(manage_guild=True)
@@ -292,82 +304,53 @@ class PokemonSpawn(commands.Cog):
         await self.do_spawn(ctx.channel)
 
     @commands.command(name="catch")
-    async def catch(self, ctx, ball_type=None, *, guess=None):
-        cid, spawn = str(ctx.channel.id), active_spawns.get(str(ctx.channel.id))
-        if ball_type is None or guess is None:
-            await ctx.send(embed=discord.Embed(title="Invalid Catch Format", description=(
-                "To catch Pokémon, you must use a ball.\n\nExamples:\n"
-                "`.catch pb pikachu`\n`.catch ub rayquaza`\n`.catch mb mew`\n\n"
-                "<:pb:1517998351227031632> pb = Poké Ball\n<:ub:1517997681564324114> ub = Ultra Ball\n"
-                "<a:mb:1517997721288704111> mb = Master Ball\n\nBuy balls from the shop first!"), color=0xED4245)); return
-        ball_type = ball_type.lower()
-        if ball_type not in BALLS: await ctx.send("❌ Valid balls are: `pb`, `ub`, `mb`"); return
-        balls = get_balls(ctx.author.id); ball_db_name = BALLS[ball_type]["db"]
-        ball_name, ball_emoji = BALLS[ball_type]["name"], BALL_EMOJI[ball_type]
-        if balls.get(ball_db_name, 0) <= 0:
-            await ctx.send(embed=discord.Embed(title="No Balls Available!", description=(
-                f"You don't have any **{ball_name}s**.\n\nBuy some from the shop first.\n\n"
-                "<:pb:1517998351227031632> Poké Ball - 10,000\n<:ub:1517997681564324114> Ultra Ball - 25,000\n"
-                "<a:mb:1517997721288704111> Master Ball - 50,000"), color=0xED4245)); return
-        if spawn is None or spawn["caught"]:
-            await ctx.send(embed=discord.Embed(description="There's no wild Pokémon here right now!", color=0xED4245)); return
-        if guess.strip().lower() != spawn["name"].lower():
-            await ctx.send(embed=discord.Embed(description=f"❌ That's not right, **{ctx.author.display_name}**! Keep trying!", color=0xED4245), delete_after=4); return
-        uid = str(ctx.author.id)
-        if db.pokemon_collection.find_one({"user_id": uid, "name": spawn["name"]}):
-            await ctx.send(embed=discord.Embed(title="Already caught! 🚫", description=(
-                f"**{ctx.author.display_name}**, you already own a **{spawn['display']}**!\nEach trainer can only catch one of each species.\n\nLet someone else catch it! 🎯"), color=0xFFA500), delete_after=8); return
+    async def catch(self, ctx, ball: str, *, guess: str):
+        ball = ball.lower()
+        if ball not in BALLS:
+            await ctx.send("❌ Use `pb`, `ub`, or `mb`.")
+            return
+        spawn = active_spawns.get(str(ctx.channel.id))
+        if not spawn or spawn.get("caught"):
+            await ctx.send("❌ There is no wild Pokémon here right now.")
+            return
+        if _clean(guess) != _clean(spawn["name"]):
+            await ctx.send(random.choice(FAILURE_FLAVOR_TEXT))
+            return
+        rarity = get_rarity(spawn["id"])
+        balls = get_balls(ctx.author.id)
+        if balls.get(BALLS[ball]["db"], 0) <= 0:
+            await ctx.send(f"❌ You don't have a {BALLS[ball]['name']}.")
+            return
+        remove_ball(ctx.author.id, BALLS[ball]["db"], 1)
+        if random.randint(1, 100) > CATCH_RATES[ball][rarity]:
+            await ctx.send(random.choice(FAILURE_FLAVOR_TEXT))
+            return
         spawn["caught"] = True
-        rarity, catch_rate = get_rarity(spawn["id"]), CATCH_RATES[ball_type][get_rarity(spawn["id"])]
-        msg = await ctx.send(embed=discord.Embed(description=f"{ball_emoji} **{ctx.author.display_name}** threw a **{ball_name}**!", color=0x5865F2))
-        shake = ""
-        for _ in range(3):
-            await asyncio.sleep(1); shake += "✨ Shake...\n"
-            try: await msg.edit(embed=discord.Embed(description=f"{ball_emoji} **{ctx.author.display_name}** threw a **{ball_name}**!\n\n{shake}", color=0x5865F2))
-            except discord.HTTPException: pass
-        await asyncio.sleep(1); remove_ball(ctx.author.id, ball_db_name, 1)
-        if not (ball_type == "mb" or random.uniform(0,100) < catch_rate):
-            fail = discord.Embed(title="💨 Oh no!", description=(f"**{spawn['display']}** broke free!\n*{random.choice(FAILURE_FLAVOR_TEXT)}*\n\nYour **{ball_name}** was lost."), color=0xED4245)
-            fail.set_footer(text=f"Catch chance was {catch_rate}% with {ball_name}")
-            try: await msg.edit(embed=fail)
-            except discord.HTTPException: await ctx.send(embed=fail)
-            return
+        character = get_character_name(ctx.guild.id) or "Emiel"
         if random.random() < EMIEL_STEAL_CHANCE:
-            log_emiel_event("steal", user_id=uid, pokemon_display=spawn["display"], rarity=rarity)
-            character_name = get_character_name(ctx.guild.id)
-            steal = discord.Embed(title=f"<:emoji_11:1515736255097471006> {character_name.upper()} APPEARED!", description=(
-                f"{character_name} snatched your **{spawn['display']}** and disappeared into the shadows!\n\n*Your {ball_name} is gone, and so is the Pokémon...*"), color=0x2B2D31)
-            steal.set_thumbnail(url=gif_url(spawn["name"])); steal.set_footer(text="Better luck next time — check .diddy for the global feed")
-            try: await msg.edit(embed=steal)
-            except discord.HTTPException: await ctx.send(embed=steal)
+            log_emiel_event(ctx.author.id, spawn["name"], "steal", character)
+            await ctx.send(f"😈 **{character} stole the {spawn['display']}!**")
+            active_spawns.pop(str(ctx.channel.id), None)
             return
-        db.pokemon_collection.insert_one({"user_id": uid, "name": spawn["name"], "display": spawn["display"], "pokedex_id": spawn["id"], "moves": [], "caught_at": datetime.datetime.utcnow()})
-        caught = discord.Embed(title="🎉 GOTCHA!", description=(f"**{spawn['display']}** was caught!\n*{RARITY_LABELS[rarity]}*\n\nUse `.team` to add it, `.moves` to teach it moves!\nWant to sell? Use `.diddy sell {spawn['display']}"), color=RARITY_EMBED_COLORS[rarity])
-        caught.set_image(url=gif_url(spawn["name"])); caught.set_footer(text=f"Pokédex #{spawn['id']} · {RARITY_LABELS[rarity]}")
-        try: await msg.edit(embed=caught)
-        except discord.HTTPException: await ctx.send(embed=caught)
+        collection = db.pokemon_collection
+        collection.insert_one({"user_id": str(ctx.author.id), "pokedex_id": spawn["id"], "name": spawn["name"], "display": spawn["display"], "caught_at": datetime.datetime.now(datetime.timezone.utc)})
+        await ctx.send(f"🎉 **{ctx.author.display_name} caught {spawn['display']}!** {BALL_EMOJI[ball]}")
+        active_spawns.pop(str(ctx.channel.id), None)
 
     @commands.command(name="pokemons", aliases=["pc", "collection"])
-    async def pokemon_collection(self, ctx, member=None):
-        target = member or ctx.author
-        if isinstance(member, str):
+    async def pokemons(self, ctx, member=None):
+        target = ctx.author
+        if member:
             try: target = await commands.MemberConverter().convert(ctx, member)
-            except commands.BadArgument: target = ctx.author
-        rows = list(db.pokemon_collection.find({"user_id": str(target.id)}).sort("caught_at", -1))
+            except commands.BadArgument: await ctx.send("❌ User not found."); return
+        rows = list(db.pokemon_collection.find({"user_id": str(target.id)}).sort("caught_at", 1))
         if not rows:
-            await ctx.send(embed=discord.Embed(title="📖  Empty Pokédex", description=(f"**{target.display_name}** hasn't caught any Pokémon yet!\n\nPokémon spawn every 1 minute — type `.catch <name>` when one appears!"), color=0xED4245)); return
-        view = DexView(rows, target); embed, file = await view.build(); msg = await ctx.send(embed=embed, file=file, view=view); view.msg = msg
-
-    @commands.command(name="setspawnchannel")
-    @commands.has_permissions(manage_guild=True)
-    async def set_spawn_channel(self, ctx):
-        channel_id = str(ctx.channel.id); existing = db.pokemon_spawn_channels.find_one({"channel_id": channel_id})
-        if existing:
-            db.pokemon_spawn_channels.delete_one({"channel_id": channel_id}); active_spawns.pop(channel_id, None)
-            await ctx.send(embed=discord.Embed(description=f"🛑 Pokémon spawning has been disabled in {ctx.channel.mention}.", color=0xED4245)); return
-        db.pokemon_spawn_channels.delete_many({"guild_id": str(ctx.guild.id)})
-        db.pokemon_spawn_channels.insert_one({"channel_id": channel_id, "guild_id": str(ctx.guild.id)})
-        await ctx.send(embed=discord.Embed(description=f"✅ Pokémon will now spawn in {ctx.channel.mention} every 1 minute!", color=0x57F287))
+            await ctx.send(f"📖 **{target.display_name}** has no Pokémon yet. Wild Pokémon spawn every **5 minutes** here.")
+            return
+        view = DexView(rows, target)
+        embed, file = await view.build()
+        msg = await ctx.send(embed=embed, file=file, view=view)
+        view.msg = msg
 
 
 async def setup(bot):
